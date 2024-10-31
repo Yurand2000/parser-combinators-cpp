@@ -41,4 +41,19 @@ Parser<char, string_slice, std::string> parse_char(char token) {
     };
 }
 
+Parser<char, string_slice, std::string> parse_not_char(char token) {
+    return [token](string_slice stream) -> ParserRes<char, string_slice, std::string> {
+        auto stream_i = stream.begin;
+
+        if (stream_i != stream.end && *stream_i != token) {
+            stream_i++;
+            
+            auto split = stream.split_at(stream_i);
+            return Ok(token, split.first, split.second);
+        } else {
+            return Error(std::format("char '{}' found", token));
+        }
+    };
+}
+
 }

@@ -34,7 +34,7 @@ template<typename Res, slice Slice, typename Err>
 }
 
 template <typename... Args>
-auto list_zero(Args&&... args) -> decltype(f(std::forward<Args>(args)...)) {
+auto list_zero(Args&&... args) -> decltype(kleene_star(std::forward<Args>(args)...)) {
   return kleene_star(std::forward<Args>(args)...);
 }
 
@@ -58,7 +58,7 @@ template<typename Res, slice Slice, typename Err>
 }
 
 template <typename... Args>
-auto list_one(Args&&... args) -> decltype(f(std::forward<Args>(args)...)) {
+auto list_one(Args&&... args) -> decltype(kleene_one(std::forward<Args>(args)...)) {
   return kleene_one(std::forward<Args>(args)...);
 }
 

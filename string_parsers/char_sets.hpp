@@ -46,6 +46,11 @@ static const auto parse_digit =
         return std::format("digit not found");
     });
 
+static const auto parse_digit_1_9 = 
+    parse_char_predicate([](char ch) { return std::isdigit(ch) > 0 && ch != '0'; }, [](char ch) {
+        return std::format("digit not found");
+    });
+
 static const auto parse_xdigit = 
     parse_char_predicate([](char ch) { return std::isxdigit(ch) > 0; }, [](char ch) {
         return std::format("xdigit not found");
