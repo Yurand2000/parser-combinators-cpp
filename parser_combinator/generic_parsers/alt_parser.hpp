@@ -54,4 +54,35 @@ template<slice Slice, typename Err, typename... Res>
     return alt_builder<Slice, Err, alt_support<>, Res...>()(parsers...);
 }
 
+// base case
+template<slice Slice, typename Err, typename Res>
+Parser<Res, Slice, Err> _alt_same(Parser<Res, Slice, Err> parser)
+{
+    return parser;
+}
+
+// recursive case
+template<slice Slice, typename Err, typename Res, typename... Parsers>
+Parser<Res, Slice, Err> _alt_same(Parser<Res, Slice, Err> parser, Parsers... parsers)
+{
+    auto alt_parsers = _alt_same(parsers...);
+
+    return [parser, alt_parsers](Slice slice) -> ParserRes<Res, Slice, Err> {
+        auto res = parser(slice);
+
+        if (res) {
+            return res;
+        } else {
+            return alt_parsers(slice);
+        }
+    };
+}
+
+// final builder
+template<slice Slice, typename Err, typename Res, typename... Parsers>
+    Parser<Res, Slice, Err> alt_same(Parser<Res, Slice, Err> parser1, Parser<Res, Slice, Err> parser2, Parsers... parsers)
+{
+    return _alt_same(parser1, parser2, parsers...);
+}
+
 }

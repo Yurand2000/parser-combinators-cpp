@@ -1,10 +1,4 @@
-#pragma once
-
-#include <string>
-#include <format>
-
-#include "string_slice.hpp"
-#include "../generic_parsers/mod.hpp"
+#include "atomic_parsers.hpp"
 
 namespace parser_combinators::string {
 
@@ -46,10 +40,11 @@ Parser<char, string_slice, std::string> parse_not_char(char token) {
         auto stream_i = stream.begin;
 
         if (stream_i != stream.end && *stream_i != token) {
+            auto ch = *stream_i;
             stream_i++;
             
             auto split = stream.split_at(stream_i);
-            return Ok(token, split.first, split.second);
+            return Ok(ch, split.first, split.second);
         } else {
             return Error(std::format("char '{}' found", token));
         }

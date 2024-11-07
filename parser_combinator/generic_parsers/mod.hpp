@@ -8,3 +8,4 @@
 #include "kleene_parsers.hpp"
 #include "separated_list_parsers.hpp"
 #include "alt_parser.hpp"
+#include "extra_parsers.hpp"

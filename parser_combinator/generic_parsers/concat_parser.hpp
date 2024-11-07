@@ -12,7 +12,7 @@ template<slice Slice, typename Err, typename Res>
         return
             parser(slice)
             .transform([](Ok<Res, Slice> res) -> Ok<std::tuple<Res>, Slice> {
-                return Ok( std::tuple(res.result), res.used, res.rest );
+                return Ok( std::make_tuple(res.result), res.used, res.rest );
             });
     };
 }
