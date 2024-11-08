@@ -1,12 +1,12 @@
 .PHONY: all tests clean
 
 CXX = g++
-CXXFLAGS = -O2 -Wall -I . --std=c++23
+CXXFLAGS = -O2 -Wall -I . --std=c++23 -fconcepts-diagnostics-depth=2
 
 OUTDIR = ./build
 
 LIBSRC = parser_combinator/string_parsers/atomic_parsers.cpp parser_combinator/string_parsers/char_sets.cpp \
-	parser_combinator/string_parsers/string_slice.cpp parser_combinator/string_parsers/whitespaces.cpp
+	parser_combinator/string_parsers/string_slice.cpp
 
 LIBOBJ := $(patsubst %.cpp, $(OUTDIR)/%.o, $(LIBSRC) )
 LIBDIRS := $(dir $(LIBOBJ))

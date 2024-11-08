@@ -1,5 +1,7 @@
 #include <cmath>
 
+#include <functional>
+
 #include "parser_combinator/parser.hpp"
 #include "json.hpp"
 #include "json_parser.hpp"
@@ -101,12 +103,12 @@ static ParserRes<JsonValue, string_slice, std::string> __json_value(string_slice
 static ParserRes<JsonArray, string_slice, std::string> __json_array(string_slice slice);
 static ParserRes<JsonObject, string_slice, std::string> __json_object(string_slice slice);
 
-static const Parser<JsonValue, string_slice, std::string> json_value =
-    [](string_slice slice) -> ParserRes<JsonValue, string_slice, std::string> { return __json_value(slice); };
-static const Parser<JsonArray, string_slice, std::string> json_array =
-    [](string_slice slice) -> ParserRes<JsonArray, string_slice, std::string> { return __json_array(slice); };
-static const Parser<JsonObject, string_slice, std::string> json_object =
-    [](string_slice slice) -> ParserRes<JsonObject, string_slice, std::string> { return __json_object(slice); };
+static const auto json_value = make_parser(std::function(
+    [](string_slice slice) -> ParserRes<JsonValue, string_slice, std::string> { return __json_value(slice); }));
+static const auto json_array = make_parser(std::function(
+    [](string_slice slice) -> ParserRes<JsonArray, string_slice, std::string> { return __json_array(slice); }));
+static const auto json_object = make_parser(std::function(
+    [](string_slice slice) -> ParserRes<JsonObject, string_slice, std::string> { return __json_object(slice); }));
 
 static ParserRes<JsonValue, string_slice, std::string> __json_value(string_slice slice) {
     return between(

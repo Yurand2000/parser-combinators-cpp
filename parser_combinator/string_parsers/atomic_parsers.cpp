@@ -2,53 +2,65 @@
 
 namespace parser_combinators::string {
 
-Parser<std::string, string_slice, std::string> parse_string(std::string token) {
-    return [token](string_slice stream) -> ParserRes<std::string, string_slice, std::string> {
-        auto stream_i = stream.begin;
-        auto token_i = token.cbegin();
+StringParser<std::string, string_slice, std::string, Wrapper<>>::StringParser(std::string string) : string(string) { }
 
-        while (token_i != token.cend()) {
-            if (stream_i == stream.end || *token_i != *stream_i) {
-                return Error(std::format("\"{}\" token not found", token));
-            }
-            token_i++;
-            stream_i++;
+ParserRes<std::string, string_slice, std::string> StringParser<std::string, string_slice, std::string, Wrapper<>>::operator()(string_slice stream) const {
+    auto stream_i = stream.begin;
+    auto token_i = this->string.cbegin();
+
+    while (token_i != this->string.cend()) {
+        if (stream_i == stream.end || *token_i != *stream_i) {
+            return Error(std::format("\"{}\" string not found", this->string));
         }
+        token_i++;
+        stream_i++;
+    }
 
+    auto split = stream.split_at(stream_i);
+    return Ok(this->string, split.first, split.second);
+}
+
+StringParser<std::string, string_slice, std::string, Wrapper<>> parse_string(std::string string) {
+    return StringParser<std::string, string_slice, std::string, Wrapper<>>(string);
+}
+
+CharParser<char, string_slice, std::string, Wrapper<>>::CharParser(char token) : token(token) { }
+
+ParserRes<char, string_slice, std::string> CharParser<char, string_slice, std::string, Wrapper<>>::operator()(string_slice stream) const {
+    auto stream_i = stream.begin;
+
+    if (stream_i != stream.end && *stream_i == token) {
+        stream_i++;
+        
         auto split = stream.split_at(stream_i);
         return Ok(token, split.first, split.second);
-    };
+    } else {
+        return Error(std::format("char '{}' not found", token));
+    }
 }
 
-Parser<char, string_slice, std::string> parse_char(char token) {
-    return [token](string_slice stream) -> ParserRes<char, string_slice, std::string> {
-        auto stream_i = stream.begin;
-
-        if (stream_i != stream.end && *stream_i == token) {
-            stream_i++;
-            
-            auto split = stream.split_at(stream_i);
-            return Ok(token, split.first, split.second);
-        } else {
-            return Error(std::format("char '{}' not found", token));
-        }
-    };
+CharParser<char, string_slice, std::string, Wrapper<>> parse_char(char token) {
+    return CharParser<char, string_slice, std::string, Wrapper<>>(token);
 }
 
-Parser<char, string_slice, std::string> parse_not_char(char token) {
-    return [token](string_slice stream) -> ParserRes<char, string_slice, std::string> {
-        auto stream_i = stream.begin;
+NotCharParser<char, string_slice, std::string, Wrapper<>>::NotCharParser(char token) : token(token) { }
 
-        if (stream_i != stream.end && *stream_i != token) {
-            auto ch = *stream_i;
-            stream_i++;
-            
-            auto split = stream.split_at(stream_i);
-            return Ok(ch, split.first, split.second);
-        } else {
-            return Error(std::format("char '{}' found", token));
-        }
-    };
+ParserRes<char, string_slice, std::string> NotCharParser<char, string_slice, std::string, Wrapper<>>::operator()(string_slice stream) const {
+    auto stream_i = stream.begin;
+
+    if (stream_i != stream.end && *stream_i != token) {
+        auto ch = *stream_i;
+        stream_i++;
+        
+        auto split = stream.split_at(stream_i);
+        return Ok(ch, split.first, split.second);
+    } else {
+        return Error(std::format("char '{}' found", token));
+    }
+}
+
+NotCharParser<char, string_slice, std::string, Wrapper<>> parse_not_char(char token) {
+    return NotCharParser<char, string_slice, std::string, Wrapper<>>(token);
 }
 
 }
